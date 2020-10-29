@@ -77,7 +77,9 @@ class INA219_WE
 {
 public:	
 	INA219_WE(int addr);
+	INA219_WE(int addr, TwoWire * wire);
 	INA219_WE();			//sets default I2C Address 0x40
+	INA219_WE(TwoWire * wire); //sets default I2C Address 0x40
   
 	bool init();
 	bool reset_INA219();
@@ -96,6 +98,7 @@ public:
 	void powerUp(); 
 	
 private:
+	TwoWire * wire;
 	INA219_ADC_MODE deviceADCMode;
 	INA219_MEASURE_MODE deviceMeasureMode;
 	INA219_PGAIN devicePGain;

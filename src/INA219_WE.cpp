@@ -17,10 +17,22 @@
 
 INA219_WE::INA219_WE(int addr){
 	i2cAddress = addr;
+	this->wire = &Wire;
+}
+
+INA219_WE::INA219_WE(int addr, TwoWire * wire){
+	i2cAddress = addr;
+	this->wire = wire;
 }
 
 INA219_WE::INA219_WE(){
 	i2cAddress = 0x40;
+	this->wire = &Wire;
+}
+
+INA219_WE::INA219_WE(TwoWire * wire){
+	i2cAddress = 0x40;
+	this->wire = wire;
 }
 	
 bool INA219_WE::init(){	
@@ -171,25 +183,25 @@ void INA219_WE::powerUp(){
 *************************************************/
 
 byte INA219_WE::writeRegister(uint8_t reg, uint16_t val){
-  Wire.beginTransmission(i2cAddress);
+  this->wire->beginTransmission(i2cAddress);
   uint8_t lVal = val & 255;
   uint8_t hVal = val >> 8;
-  Wire.write(reg);
-  Wire.write(hVal);
-  Wire.write(lVal);
-  return Wire.endTransmission();
+  this->wire->write(reg);
+  this->wire->write(hVal);
+  this->wire->write(lVal);
+  return this->wire->endTransmission();
 }
   
 uint16_t INA219_WE::readRegister(uint8_t reg){
   uint8_t MSByte = 0, LSByte = 0;
   uint16_t regValue = 0;
-  Wire.beginTransmission(i2cAddress);
-  Wire.write(reg);
-  Wire.endTransmission();
-  Wire.requestFrom(i2cAddress,2);
-  if(Wire.available()){
-    MSByte = Wire.read();
-    LSByte = Wire.read();
+  this->wire->beginTransmission(i2cAddress);
+  this->wire->write(reg);
+  this->wire->endTransmission();
+  this->wire->requestFrom(i2cAddress,2);
+  if(this->wire->available()){
+    MSByte = this->wire->read();
+    LSByte = this->wire->read();
   }
   regValue = (MSByte<<8) + LSByte;
   return regValue;
